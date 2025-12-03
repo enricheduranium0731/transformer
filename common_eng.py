@@ -134,14 +134,8 @@ class commonThread() :
                     # return False
             
             isTrendOk=False    
-            if DealTrader.isNNDealOk("BUY") and (run_type=="real"):
-                isTrendOk=True
-                                        
-            if strategy=="temp":    
-                if DealTrader.isNNDealOk("SELL") and (run_type=="real"):
-                    #if (self.getRefLowInd(symbol, iContinueCount,period*ind//240,240,12)>period*ind//240+2) or(self.getRefLowInd(symbol, iContinueCount,period*ind//1440,1440,12)>period*ind//1440+2):
-                    return False 
-                                                   
+                                       
+            if strategy=="temp":                                                       
                 # for x in [y for y in arr_PeriodI if (y==period)]:
                     # xInd=period*ind//x
                     # y=self.iKdjDownInd(symbol,x,xInd)
@@ -245,19 +239,7 @@ class commonThread() :
 
                 if (self.isBandGoDown(symbol,u,xInd)):
                     return False
-                    
-            for u in [t for t in arr_PeriodI if (t>=15 and t<=240)]:
-                xInd=period*ind//u
-                for y in range(5,10):                       
-                    if (self.iContinueDownFromTopByHighId(symbol,iContinueCount2,xInd,u,y,iRefContinueCount)>0):
-                        return False 
-                        
-            for u in [t for t in arr_PeriodI if (t>=15 and t<=240)]:
-                xInd=period*ind//u
-                if self.isTopChan(symbol,u,xInd,16)>=0:
-                    self.print_comment(symbol,dect_type,"标的:("+symbol+"),周期:("+str(u)+")分钟顶部背驰缠绕趋势向下!!")
-                    return False
-                        
+                   
             for u in [t for t in arr_PeriodI if (t>=15 and t<=240)]:
                 xInd=period*ind//u                                    
                 if (self.isQianDown(symbol,iCloseZoom,xInd,u)):
@@ -336,16 +318,8 @@ class commonThread() :
                 # xInd=period*ind//x
                 # if (self.iStochastic(symbol,x,14,3,"SMA","MAIN",xInd)<=80) and (self.iStochastic(symbol,x,14,3,"SMA","MAIN",xInd)>=self.iStochastic(symbol,x,14,3,"SMA","SIGNAL",xInd)):
                     # return False 
-
-            if DealTrader.isNNDealOk("SELL") and (run_type=="real"):
-                isTrendOk=True
-                #break 
-                                           
-            if strategy=="temp":    
-                if DealTrader.isNNDealOk("BUY") and (run_type=="real"):
-                    #if (self.getRefHighInd(symbol, iContinueCount,period*ind//240,240,12)>period*ind//240+2) or(self.getRefHighInd(symbol, iContinueCount,period*ind//1440,1440,12)>period*ind//1440+2):
-                    isOk=False 
-                                                    
+                                          
+            if strategy=="temp":                                                        
                 # for x in [y for y in arr_PeriodI if (y==period)]:
                     # xInd=period*ind//x
                     # y=self.iKdjUpInd(symbol,x,xInd)
@@ -451,24 +425,12 @@ class commonThread() :
                     
                 if (self.isBandGoUp(symbol,u,xInd)):
                     return False   
-                    
-            for u in [t for t in arr_PeriodI if (t>=15 and t<=240)]:
-                xInd=period*ind//u
-                for y in range(5,10):                       
-                    if (self.iContinueUpFromBottomByLowId(symbol,iContinueCount2,xInd,u,y,iRefContinueCount)>0):
-                        return False 
  
             for u in [t for t in arr_PeriodI if (t>=15 and t<=240)]:
                 xInd=period*ind//u                                
                 if (self.isQianUp(symbol,iCloseZoom,xInd,u)):
                     return False 
-
-            for u in [t for t in arr_PeriodI if (t>=15 and t<=240)]:
-                xInd=period*ind//u          
-                if (self.isBottomChan(symbol,u,xInd,16)>=0) :
-                    self.print_comment(symbol,dect_type,"标的:("+symbol+"),周期:("+str(u)+")分钟底部背驰缠绕趋势向上!!")
-                    return False     
-                        
+                   
             for u in [t for t in arr_PeriodI if (t==period or t==240)]:
                 xInd=period*ind//u       
                 for method in arr_MaMethod:
@@ -2143,3 +2105,4 @@ class commonThread() :
                 print(key)
                 print(len(value))
                 print(count)    
+
