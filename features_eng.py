@@ -31,14 +31,14 @@ dataFile = "products--transformer.txt"
 arr_MaMethod = ["MODE_SMA"]
 arr_symbols = ['BTCUSDT', 'DOGEUSDT', 'BNBUSDT', 'XRPUSDT', 'SOLUSDT', 'ADAUSDT', 'UNIUSDT']
 arr_PeriodTick = ["15m"]
-arr_PeriodS = ["15m", "30m", "1h", "4h", "1d"]
-arr_PeriodI = [15, 30, 60, 240, 1440]
+arr_PeriodS = ["15m", "30m", "1h", "4h"]
+arr_PeriodI = [15, 30, 60, 240]
 dataFile = ""
 arr_Deal_PeriodI = [60]
-label = sys.argv[1]
-dataYear = float(sys.argv[2])
-run_type = sys.argv[3]
-
+#label = sys.argv[1]
+#dataYear = float(sys.argv[2])
+#run_type = sys.argv[3]
+    
 iRealDataCounts = 1000
 iPosReadyCount = 16
 iRefContinueCount = 3
@@ -161,7 +161,7 @@ class featuresThread() :
         
         for x in arr_Deal_PeriodI:
             #refKDataAmount=len(dict_symbol[symbol][arr_PeriodS[thread1.refArrayInd(arr_PeriodI,x)]])
-            #refStart=int((1440/x+10)*100)
+            #refStart=int((240/x+10)*100)
             #print(refKDataAmount)
             #ind =refStart
                
@@ -174,7 +174,7 @@ class featuresThread() :
             asset=0.0                
             while ind<=count:
                 k=count-ind
-                features=self.genFeature(symbol,x,k,features)
+                features=self.genFeature(symbol,x,k,features,run_type)
                 if (run_type=="train"):
                     print(f"Generated Features:{ind}/{count}")
                 ind+=1
@@ -279,7 +279,7 @@ class featuresThread() :
         
         for x in arr_Deal_PeriodI:
             #refKDataAmount=len(dict_symbol[symbol][arr_PeriodS[thread1.refArrayInd(arr_PeriodI,x)]])
-            #refStart=int((1440/x+10)*100)
+            #refStart=int((240/x+10)*100)
             #print(refKDataAmount)
             #ind =refStart
             icount=count   
@@ -292,7 +292,7 @@ class featuresThread() :
             asset=0.0                
             while ind<=icount:
                 k=icount-ind
-                features=self.genFeature(symbol,x,k,features)
+                features=self.genFeature(symbol,x,k,features,run_type)
                 if (run_type=="train"):
                     print(f"Generated Features:{ind}/{icount}")
                 ind+=1
@@ -317,10 +317,10 @@ class featuresThread() :
         #print(f"df_last:{df_last}")     
         dict_features[symbol.lower()]=df_last
         
-    def genFeature(self,symbol,period,ind,features):
+    def genFeature(self,symbol,period,ind,features,run_type):
         global refKDataAmount
         thread1 = common_eng.commonThread()
-        
+
         features["timestamp"].append(thread1.iTime(symbol,period,ind))
         
         features["openh4"].append(thread1.iOpen(symbol,60,period*ind//60))
@@ -405,7 +405,7 @@ class featuresThread() :
         features["isRsiUp"].append(v)         
         
         v=0 
-        for x in [y for y in arr_PeriodI if (y>=240 and y<=1440)]:
+        for x in [y for y in arr_PeriodI if (y>=240 and y<=240)]:
             xInd=period*ind//x
             if (thread1.iStochastic(symbol,x,10,3,"SMA","MAIN",xInd)>=80) and (thread1.iStochastic(symbol,x,10,3,"SMA","SIGNAL",xInd)>=80):
                 v=-1
@@ -414,7 +414,7 @@ class featuresThread() :
         features["iStochasticDown"].append(v)            
 
         v=0 
-        for x in [y for y in arr_PeriodI if (y>=240 and y<=1440)]:
+        for x in [y for y in arr_PeriodI if (y>=240 and y<=240)]:
             xInd=period*ind//x
             if (thread1.iStochastic(symbol,x,10,3,"SMA","MAIN",xInd)<=20) and (thread1.iStochastic(symbol,x,10,3,"SMA","SIGNAL",xInd)<=20):
                 v=1
@@ -445,7 +445,7 @@ class featuresThread() :
         features["iMacdUpInd"].append(v) 
         
         v=0
-        for u in [t for t in arr_PeriodI if (t>=240 and t<=1440)]:
+        for u in [t for t in arr_PeriodI if (t>=240 and t<=240)]:
             xInd=period*ind//u
             if (thread1.isTouchedTopBand(symbol,u,xInd)):
                 v=-1
@@ -454,7 +454,7 @@ class featuresThread() :
         features["isTouchedTopBand"].append(v)
 
         v=0
-        for u in [t for t in arr_PeriodI if (t>=240 and t<=1440)]:
+        for u in [t for t in arr_PeriodI if (t>=240 and t<=240)]:
             xInd=period*ind//u
             if (thread1.isBandGoDown(symbol,u,xInd)):
                 v=-1
@@ -463,7 +463,7 @@ class featuresThread() :
         features["isBandGoDown"].append(v)
         
         v=0
-        for u in [t for t in arr_PeriodI if (t>=240 and t<=1440)]:
+        for u in [t for t in arr_PeriodI if (t>=240 and t<=240)]:
             xInd=period*ind//u
             if (thread1.isTouchedBottomBand(symbol,u,xInd)):
                 v=1
@@ -472,7 +472,7 @@ class featuresThread() :
         features["isTouchedBottomBand"].append(v)
 
         v=0
-        for u in [t for t in arr_PeriodI if (t>=240 and t<=1440)]:
+        for u in [t for t in arr_PeriodI if (t>=240 and t<=240)]:
             xInd=period*ind//u
             if (thread1.isBandGoUp(symbol,u,xInd)):
                 v=-1
@@ -481,7 +481,7 @@ class featuresThread() :
         features["isBandGoUp"].append(v)
         
         v1=v2=0
-        for x in [y for y in arr_PeriodI if (y>=240 and y<1440)]:
+        for x in [y for y in arr_PeriodI if (y>=240 and y<240)]:
             xInd=period*ind//x          
             for method in arr_MaMethod:
                 if (thread1.isPowerMaDown(symbol,30,50,100,x,method,xInd,12)):
@@ -500,7 +500,7 @@ class featuresThread() :
         features["isPowerMaDown2"].append(v2)        
 
         v1=v2=0
-        for x in [y for y in arr_PeriodI if (y>=240 and y<1440)]:
+        for x in [y for y in arr_PeriodI if (y>=240 and y<240)]:
             xInd=period*ind//x          
             for method in arr_MaMethod:
                 if (thread1.isPowerMaUp(symbol,30,50,100,x,method,xInd,12)):
@@ -517,7 +517,7 @@ class featuresThread() :
         features["isPowerMaUp1"].append(v1)           
         features["isPowerMaUp2"].append(v2)
         v=0
-        for x in [y for y in arr_PeriodI if (y>=240 and y<=1440)]:
+        for x in [y for y in arr_PeriodI if (y>=240 and y<=240)]:
             xInd=period*ind//x
             y=thread1.iKdjDownInd(symbol,x,xInd)
             if ((y>0) and ((y-xInd)<9)):
@@ -527,7 +527,7 @@ class featuresThread() :
         features["iKdjDownInd"].append(v)
 
         v=0
-        for x in [y for y in arr_PeriodI if (y>=240 and y<=1440)]:
+        for x in [y for y in arr_PeriodI if (y>=240 and y<=240)]:
             xInd=period*ind//x
             y=thread1.iKdjUpInd(symbol,x,xInd)
             if ((y>0) and ((y-xInd)<9)):
@@ -600,7 +600,7 @@ class featuresThread() :
             v=-1 
 
         if thread1.isContinueDown(symbol,60,period*ind//240+1,3):
-            thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(1440)+")持续向下!!")
+            thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(240)+")持续向下!!")
             v=-1                                         
         features["isContinueDown"].append(v)
 
@@ -610,7 +610,7 @@ class featuresThread() :
             v=1 
 
         if thread1.isContinueUp(symbol,60,period*ind//240+1,3):
-            thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(1440)+")持续向下!!")
+            thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(240)+")持续向下!!")
             v=1                                         
         features["isContinueUp"].append(v)
         
@@ -623,14 +623,14 @@ class featuresThread() :
                     thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(240)+")分钟向下吞没!!")
                     v=-1  
 
-        refId1=thread1.getRefHighInd(symbol, iContinueCount,period*ind//1440,1440,16)
-        refId2=thread1.getRefLowInd(symbol, iContinueCount,period*ind//1440,1440,16)
+        refId1=thread1.getRefHighInd(symbol, iContinueCount,period*ind//240,240,16)
+        refId2=thread1.getRefLowInd(symbol, iContinueCount,period*ind//240,240,16)
         if (True):
             if (refId1<refId2) and(thread1.isPierceAndSwallowDownP(symbol,240,refId1,1.5)):
                 refId1=thread1.getRefHighInd(symbol, iContinueCount,period*ind//240,240,12)
                 refId2=thread1.getRefLowInd(symbol, iContinueCount,period*ind//240,240,12)    
                 if not ((refId2<refId1) and (thread1.isPierceAndSwallowUpP(symbol,60,refId2,1.5))):                
-                    thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(1440)+")分钟向下吞没!!")
+                    thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(240)+")分钟向下吞没!!")
                     v=-1
    
         features["isPierceAndSwallowDownP"].append(v)       
@@ -644,14 +644,14 @@ class featuresThread() :
                     thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(240)+")分钟向下吞没!!")
                     v=1                         
 
-        refId1=thread1.getRefHighInd(symbol, iContinueCount,period*ind//1440,1440,16)
-        refId2=thread1.getRefLowInd(symbol, iContinueCount,period*ind//1440,1440,16)
+        refId1=thread1.getRefHighInd(symbol, iContinueCount,period*ind//240,240,16)
+        refId2=thread1.getRefLowInd(symbol, iContinueCount,period*ind//240,240,16)
         if (True):
             if (refId1<refId2) and(thread1.isPierceAndSwallowDownP(symbol,240,refId1,1.5)):
                 refId1=thread1.getRefHighInd(symbol, iContinueCount,period*ind//240,240,12)
                 refId2=thread1.getRefLowInd(symbol, iContinueCount,period*ind//240,240,12)    
                 if not ((refId2<refId1) and (thread1.isPierceAndSwallowDownP(symbol,60,refId2,1.5))):                
-                    thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(1440)+")分钟向下吞没!!")
+                    thread1.print_comment(symbol,run_type,"标的:("+symbol+"),周期:("+str(240)+")分钟向下吞没!!")
                     v=1 
                     
         features["isPierceAndSwallowUpP"].append(v) 
@@ -659,8 +659,8 @@ class featuresThread() :
         features["getRefHighIndh4"].append(thread1.getRefHighInd(symbol,iContinueCount,period*ind//240,240,16)-period*ind//240)
         features["getRefLowIndh4"].append(thread1.getRefLowInd(symbol,iContinueCount,period*ind//240,240,16)-period*ind//240)
 
-        features["getRefHighIndd1"].append(thread1.getRefHighInd(symbol,iContinueCount,period*ind//1440,1440,16)-period*ind//1440)
-        features["getRefLowIndd1"].append(thread1.getRefLowInd(symbol,iContinueCount,period*ind//1440,1440,16)-period*ind//1440)
+        features["getRefHighIndd1"].append(thread1.getRefHighInd(symbol,iContinueCount,period*ind//240,240,16)-period*ind//240)
+        features["getRefLowIndd1"].append(thread1.getRefLowInd(symbol,iContinueCount,period*ind//240,240,16)-period*ind//240)
         
         # thread1.reportDict(features,len(features)-1)
         
